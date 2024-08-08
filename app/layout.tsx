@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono} from "next/font/google";
+import { Inter} from "next/font/google";
 import '@/styles/global.css';
-const jetBrainsMono = JetBrains_Mono({ subsets: ["latin"] });
-
+const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Caudex",
   description: "Codeshare app share code online collobrate share code online code editor",
@@ -18,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={jetBrainsMono.className}>{children}</body>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }

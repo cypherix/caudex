@@ -1,5 +1,5 @@
 
-import { extensionsMap,fileNameMap } from "./Mapping";
+import { extensionsMap,fileNameMap } from "./mapping";
 const BASE_URL = "https://cdn.jsdelivr.net/gh/cypherix/icons@main/";
 const DEFAULT = "/assets/logo.svg"
 export const getFileMapping = (filename:string):string => {
@@ -13,7 +13,6 @@ export const getFileMapping = (filename:string):string => {
             return BASE_URL+extensionsMap[extension]+".svg";
         }
     }
-
     return DEFAULT;
 }
 
