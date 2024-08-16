@@ -1309,3 +1309,70 @@ export const fileNameMap: Record<string, string> = {
     "puppeteer.config.js": "puppeteer",
     "puppeteer.config.cjs": "puppeteer",
 };
+
+export const languageMapping: Record<string, string> = {
+    "js": "javascript",
+    "ts": "typescript",
+    "jsx": "javascript",
+    "tsx": "typescript",
+    "html": "html",
+    "css": "css",
+    "scss": "scss",
+    "less": "less",
+    "json": "json",
+    "md": "markdown",
+    "xml": "xml",
+    "yml": "yaml",
+    "yaml": "yaml",
+    "php": "php",
+    "py": "python",
+    "rb": "ruby",
+    "java": "java",
+    "c": "c",
+    "cpp": "cpp",
+    "cs": "csharp",
+    "go": "go",
+    "rs": "rust",
+    "sh": "shell",
+    "bat": "bat",
+    "pl": "perl",
+    "swift": "swift",
+    "kt": "kotlin",
+    "r": "r",
+    "vue": "vue",
+    "dart": "dart",
+    "sql": "sql",
+    "toml": "toml",
+    "ini": "ini",
+    "dockerfile": "dockerfile",
+    "makefile": "makefile",
+    "groovy": "groovy",
+    "properties": "properties",
+    "gradle": "groovy",
+    "vbs": "vb",
+    "vba": "vba",
+    "erl": "erlang",
+    "ex": "elixir",
+    "exs": "elixir",
+    "jl": "julia",
+    "rmd": "markdown",
+    "sol": "solidity",
+    "coffee": "coffeescript",
+    "hbs": "handlebars",
+    "hs": "haskell",
+    "log": "log",
+    "txt": "plaintext",
+};
+
+
+export function getLanguageByFilename(filename: string): string {
+    const getFileExtension = (filename: string): string | null => {
+      const parts = filename.split('.');
+      if (parts.length > 1 && parts[0] !== '') {
+        return parts.pop() || null;
+      }
+      return null;
+    };
+    const extension = getFileExtension(filename);
+    return extension ? languageMapping[extension] || "plaintext" : "plaintext";
+  }
