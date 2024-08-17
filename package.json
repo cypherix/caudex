@@ -16,15 +16,17 @@
     "immer": "^10.1.1",
     "ioredis": "^5.4.1",
     "monaco-editor": "^0.50.0",
+    "mongodb": "^6.8.0",
     "mongoose": "^8.5.2",
     "next": "14.2.5",
     "react": "^18",
     "react-dom": "^18",
+    "react-spinners": "^0.14.1",
     "react-toastify": "^10.0.5",
     "redis": "^4.7.0",
     "socket.io-client": "^4.7.5",
     "ws": "^8.18.0",
-    "zustand": "^4.5.4"
+    "zustand": "^4.5.5"
   },
   "devDependencies": {
     "@types/diff-match-patch": "^1.0.36",

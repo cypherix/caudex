@@ -1,16 +1,16 @@
 'use client'
+import React, { useEffect, useState, useCallback } from "react"
 import { editor } from "monaco-editor"
+import { Editor, useMonaco } from "@monaco-editor/react"
+import * as DMP from 'diff-match-patch'
+import { useFileStore } from "@/utils/zustand/barState"
 import { getLanguageByFilename } from "@/utils/Icon/mapping"
 import theme from "@/utils/Theme"
-import { useFileStore } from "@/utils/zustand/barState"
-import { useEditorStore } from "@/utils/zustand/EditorState"
-import { Editor, useMonaco } from "@monaco-editor/react"
-import { useEffect, useState, useCallback } from "react"
-import DiffMatchPatch from "diff-match-patch";
 
-export const HeroEditor: React.FC = (): JSX.Element => {
-    const { activeFile} = useFileStore(state => ({
+export const HeroEditor: React.FC = () => {
+    const { activeFile, updateFileContent } = useFileStore(state => ({
         activeFile: state.activeFile,
+        updateFileContent: state.updateFileContent,
     }))
     const monaco = useMonaco();
     const [isThemeApplied, setIsThemeApplied] = useState(false);
@@ -24,13 +24,9 @@ export const HeroEditor: React.FC = (): JSX.Element => {
                 noSemanticValidation: true,
                 noSyntaxValidation: false,
             });
-
-            
         }
-        
     }, [monaco]);
 
-    
     const lang = getLanguageByFilename(activeFile?.name || "")
 
     const editorOptions: editor.IStandaloneEditorConstructionOptions = {
@@ -50,7 +46,6 @@ export const HeroEditor: React.FC = (): JSX.Element => {
         lineNumbers: "on",
         glyphMargin: true,
         folding: true,
-        
     };
 
     const handleEditorDidMount = useCallback((editor: any, monaco: any) => {
@@ -58,22 +53,31 @@ export const HeroEditor: React.FC = (): JSX.Element => {
         editor.focus();
     }, []);
 
+    const handleEditorChange = (value: string | undefined) => {
+        if (activeFile && value !== undefined) {
+            const dmp = new DMP.diff_match_patch();
+            const patches = dmp.patch_make(activeFile.content, value);
+            const patchText = dmp.patch_toText(patches);
+            
+            updateFileContent(activeFile.name, value);            
+        }
+    };
 
     return (
         <div className="bg-[#000] w-[85vw] h-[92vh] flex justify-center items-center text-[#FFFFFF]">
-            
             {activeFile?.content ? (
                 <div className="w-full h-full">
                     <Editor
-                    width="100%"
-                    height="100%"
-                    language={lang}
-                    theme={isThemeApplied ? 'caudex' : 'vs-dark'}
-                    options={editorOptions}
-                    value={activeFile.content}
-                    onMount={handleEditorDidMount}
-                    loading={<div style={{ color: 'white' , textAlign: 'center',display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%'}}>Loading editor...</div>}
-                />
+                        width="100%"
+                        height="100%"
+                        language={lang}
+                        theme={isThemeApplied ? 'caudex' : 'vs-dark'}
+                        options={editorOptions}
+                        value={activeFile.content}
+                        onMount={handleEditorDidMount}
+                        onChange={handleEditorChange}
+                        loading={<div style={{ color: 'white' , textAlign: 'center',display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%'}}>Loading editor...</div>}
+                    />
                 </div>
             ) : (
                 <div>Select Some File or Create a New File</div>

@@ -1,15 +1,21 @@
 'use client'
-import React from 'react'
-import { HeroEditor } from '../components/HeroEditor'
+import React, { useEffect } from 'react'
+import { HeroEditor } from '../../components/HeroEditor'
 import { SideBar } from '@/components/SideBar'
 import { TopBar } from '@/components/TopBar'
 import { useFileStore } from '@/utils/zustand/barState'
 import { FileModal } from '@/components/FileModal'
 import "react-toastify/ReactToastify.css"
-import { Bounce, cssTransition, ToastContainer } from 'react-toastify'
+import { Bounce, ToastContainer } from 'react-toastify'
+import { useEditorData } from '@/utils/zustand/useEditorData'
 
-export default function Home() {
-  const [isOpen,closeModal] = useFileStore(state => [state.isOpen,state.closeModal])
+export default function Home({params}:{params:{UrlSlug:string}}) {
+  const [setSlug,isOpen,closeModal] = useFileStore(state => [state.setSlug,state.isOpen,state.closeModal])
+  useEffect(() => {
+    setSlug(params.UrlSlug)
+    
+  },[params.UrlSlug,setSlug])
+  useEditorData(params.UrlSlug)
   return (
       <div>
       <FileModal isOpen={isOpen} onClose={closeModal}/>

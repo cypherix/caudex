@@ -6,7 +6,6 @@ import { useFileStore } from "@/utils/zustand/barState"
 import { Bounce, toast, ToastContainer } from "react-toastify"
 
 export const TopBar: React.FC = (): JSX.Element => {
-
     const [
         activeFile,
         setActiveFile,
@@ -19,21 +18,39 @@ export const TopBar: React.FC = (): JSX.Element => {
         state.deleteFile
     ])
     const CopyToClipboard = async () => {
-        if(activeFile){
+        if (activeFile) {
             let content = activeFile.content;
-            toast.info(' Copied to your clipboard', {
-                position: "bottom-left",
-                autoClose: 1500,
-                hideProgressBar: true,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "colored",
-                transition: Bounce,
-                icon:false
+    
+            try {
+                await navigator.clipboard.writeText(content);
+                toast.info('Copied to your clipboard', {
+                    position: "bottom-left",
+                    autoClose: 1500,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    transition: Bounce,
+                    icon: false
                 });
-    }
+            } catch (error) {
+                toast.error('Failed to copy!', {
+                    position: "bottom-left",
+                    autoClose: 1500,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    transition: Bounce,
+                    icon: false
+                });
+                console.error('Failed to copy to clipboard:', error);
+            }
+        }
     };
     return (
         <div className="h-[5vh] bg-[#000] flex items-center text-[#FFFFFF] border-y-[1rem] border-[#000] p-[1rem]">
@@ -48,17 +65,32 @@ export const TopBar: React.FC = (): JSX.Element => {
                 }
             </div>
             <div className="w-[20%] flex justify-end items-center gap-[0.5rem]">
-                <Button
-                onClick={CopyToClipboard}
-                className="flex items-center p-[0.5rem] rounded-md border-[#6272A4] border-[1px]">
-                    <Image
-                        src="/assets/copy-solid.svg"
-                        alt="Icon for the copy"
-                        width={20}
-                        height={20}
-                    />
-                    <h1 className="ml-[0.5rem]">Copy</h1>
-                </Button>
+                {
+                    activeFile ? <Button 
+                        className="flex items-center p-[0.5rem] rounded-md border-[#FF2442] border-[1px]"
+                        onClick={deleteFile}>
+                        <Image
+                            src="/assets/trash-solid.svg"
+                            alt="Icon for the cut"
+                            width={20}
+                            height={20}
+                        />
+                    </Button>: null
+                }
+                {
+                    activeFile ? 
+                    <Button
+                        onClick={CopyToClipboard}
+                        className="flex items-center p-[0.5rem] rounded-md border-[#6272A4] border-[1px]">
+                            <Image
+                                src="/assets/copy-solid.svg"
+                                alt="Icon for the copy"
+                                width={20}
+                                height={20}
+                            />
+                            <h1 className="ml-[0.5rem]">Copy</h1>
+                    </Button> : null
+                }
                 <Button className="flex items-center p-[0.5rem] rounded-md border-[#6272A4] border-[1px]">
                     <Image
                         src="/assets/share.svg"
@@ -68,17 +100,6 @@ export const TopBar: React.FC = (): JSX.Element => {
                     />
                     <h1 className="ml-[0.5rem]">Share</h1>    
                 </Button>
-                <Button 
-                    className="flex items-center p-[0.5rem] rounded-md border-[#FF2442] border-[1px]"
-                    onClick={deleteFile}>
-                    <Image
-                        src="/assets/trash-solid.svg"
-                        alt="Icon for the cut"
-                        width={20}
-                        height={20}
-                    />
-                </Button>
-                
             </div>
         </div>
     )
