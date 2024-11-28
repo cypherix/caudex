@@ -10,7 +10,7 @@ type FileModalProps = {
 
 export const FileModal: React.FC<FileModalProps> = (props):JSX.Element=>{
 
-    const [createFile] = useFileStore(state => [state.createFile])
+    const [createFile,getFileByName] = useFileStore(state => [state.createFile,state.getFileByName])
     const [fileName, setFileName] = useState('');
     const [error, setError] = useState('');
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
@@ -35,9 +35,25 @@ export const FileModal: React.FC<FileModalProps> = (props):JSX.Element=>{
     
       const handleCreateFile = () => {
         if (!isButtonDisabled) {
+          if(getFileByName(fileName)){
+            toast.error('File already exists', {
+              position: "bottom-left",
+              autoClose: 1500,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+              transition: Bounce,
+              icon:false
+              
+            })
+            return
+          }
           createFile({
             name: fileName,
-            content:" ",
+            content: '',
           })
           toast.info('File created successfully', {
             position: "bottom-left",

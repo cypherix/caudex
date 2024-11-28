@@ -59,18 +59,18 @@ export const HeroEditor: React.FC = () => {
             const patches = dmp.patch_make(activeFile.content, value);
             const patchText = dmp.patch_toText(patches);
             
-            updateFileContent(activeFile.name, value);            
+            updateFileContent(activeFile.name, value, patchText);            
         }
     };
 
     return (
-        <div className="bg-[#000] w-[85vw] h-[92vh] flex justify-center items-center text-[#FFFFFF]">
-            {activeFile?.content ? (
+        <div className="bg-[#000] w-full h-full flex justify-center items-center text-[#FFFFFF]">
+            {activeFile? (
                 <div className="w-full h-full">
                     <Editor
                         width="100%"
                         height="100%"
-                        language={lang}
+                        language={lang? lang : undefined }
                         theme={isThemeApplied ? 'caudex' : 'vs-dark'}
                         options={editorOptions}
                         value={activeFile.content}

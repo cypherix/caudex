@@ -1,11 +1,13 @@
-import { PageModel, connectMongo } from "../middlewares/mongo";
+import dbConnect from '../middlewares/mongo';
+import { PageModel } from "../middlewares/mongo";
+
 import * as DMP from 'diff-match-patch';
 
-// Ensure MongoDB connection is established before handling requests
-connectMongo();
+
 
 // Handle GET requests
 export const GET = async (req: Request, { params }: { params: { UrlSlug: string } }) => {
+    await dbConnect();
     try {
         const UrlSlug = params.UrlSlug;
         console.log(`Received GET request for slug: ${UrlSlug}`);
@@ -28,6 +30,7 @@ export const GET = async (req: Request, { params }: { params: { UrlSlug: string 
 // Handle POST requests
 // Handle POST requests for creating a new file
 export const POST = async (req: Request, { params }: { params: { UrlSlug: string } }) => {
+    await dbConnect();
     try {
         const UrlSlug = params.UrlSlug;
         const { name, content } = await req.json();
@@ -59,11 +62,12 @@ export const POST = async (req: Request, { params }: { params: { UrlSlug: string
 
 // Handle PATCH requests for updating the file content
 export const PATCH = async (req: Request, { params }: { params: { UrlSlug: string } }) => {
+    await dbConnect();
     try {
         const UrlSlug = params.UrlSlug;
-        const { fileName, patch } = await req.json();
+        const { name, patch } = await req.json();
 
-        console.log(`Received PATCH request for updating file content in slug: ${UrlSlug}, file: ${fileName}`);
+        console.log(`Received PATCH request for updating file content in slug: ${UrlSlug}, file: ${name}`);
 
         // Find the page with the given slug
         const page = await PageModel.findOne({ slug: UrlSlug });
@@ -72,7 +76,7 @@ export const PATCH = async (req: Request, { params }: { params: { UrlSlug: strin
         }
 
         // Find the file within the page
-        const file = page.files.find((f: any) => f.name === fileName);
+        const file = page.files.find((f: any) => f.name === name);
         if (!file) {
             return new Response(JSON.stringify({ error: 'File not found' }), { status: 404 });
         }
@@ -89,7 +93,7 @@ export const PATCH = async (req: Request, { params }: { params: { UrlSlug: strin
         file.content = newContent;
         await page.save();
 
-        console.log(`Updated content for file: ${fileName} in page: ${UrlSlug}`);
+        console.log(`Updated content for file: ${name} in page: ${UrlSlug}`);
         return new Response(JSON.stringify({ success: true }), { status: 200 });
     } catch (error) {
         console.error('Error handling PATCH request:', error);
@@ -99,6 +103,7 @@ export const PATCH = async (req: Request, { params }: { params: { UrlSlug: strin
 
 // Handle DELETE requests for deleting a file
 export const DELETE = async (req: Request, { params }: { params: { UrlSlug: string } }) => {
+    await dbConnect();
     try {
         const UrlSlug = params.UrlSlug;
         const { fileName } = await req.json();

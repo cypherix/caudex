@@ -42,14 +42,14 @@ export const createData = async (slug: string, file: FileType) => {
 };
 
 // Function to update a file by sending a PATCH request to the backend API
-export const updateData = async (slug: string, file: FileType) => {
+export const updateData = async (slug: string, name:string,patch:string) => {
     try {
         const response = await fetch(`/api/${slug}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(file),
+            body: JSON.stringify({ name, patch }),
         });
 
         if (!response.ok) {

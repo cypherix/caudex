@@ -25,7 +25,7 @@ export const FileBadge:React.FC<fileProps> = (props):JSX.Element => {
                 width={25}
                 height={25}
                 />
-            <h1 className={`ml-[0.2rem ${(props.isActive && !props.isTopBar)? "text-[#6272A4]" : "text-[#FFFFFF]"}`} >{props.name}</h1>
+            <h1 className={`ml-[0.3rem] ${(props.isActive && !props.isTopBar)? "text-[#6272A4]" : "text-[#FFFFFF]"}`} >{props.name}</h1>
             
         </div>
         {

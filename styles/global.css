@@ -11,7 +11,32 @@
     margin: 0;
     box-sizing: border-box;
 }
+.menu-icon {
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+  display: inline-block;
+  margin: 20px;
+}
 
+.menu-icon.open #top {
+  transform: translateX(9px);
+}
+
+.menu-icon.open #center {
+  transform: translateX(3px);
+}
+
+.menu-icon.open #bottom {
+  transform: translateX(9px);
+}
+
+rect, path {
+  transition: transform 0.3s ease-in-out;
+}
+
+body{
+  background-color: #000;
+}
 .ripple-button {
     position: relative;
     overflow: hidden;
@@ -31,4 +56,33 @@
       transform: scale(4);
       opacity: 0;
     }
+  }
+
+
+  @keyframes spin-smooth {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  @keyframes fade-in-out {
+    0%, 100% {
+      opacity: 0.7;
+      transform: scale(0.95);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  .animate-spin-smooth {
+    animation: spin-smooth 1.5s ease-in-out infinite;
+  }
+  
+  .animate-fade-in-out {
+    animation: fade-in-out 5s ease-in-out infinite;
   }

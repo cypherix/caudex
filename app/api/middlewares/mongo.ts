@@ -8,7 +8,7 @@ const FileSchema = new mongoose.Schema({
     },
     content: {
         type: String,
-        required: true
+        
     }
 });
 
@@ -25,23 +25,57 @@ const PageSchema = new mongoose.Schema({
 // Check if the 'Page' model already exists before defining it
 export const PageModel = mongoose.models.Page || mongoose.model('Page', PageSchema);
 
-// MongoDB connection URI
-const URI = 'mongodb://127.0.0.1:27017/caudex';
+// File: lib/mongodb.ts
 
-// Function to connect to MongoDB with error handling
-export const connectMongo = async () => {
-    try {
-        await mongoose.connect(URI);
-        console.log('Successfully connected to MongoDB');
-    } catch (error) {
-        console.error('Failed to connect to MongoDB:', error);
-        process.exit(1); // Exit the process if connection fails
-    }
-};
 
-// Automatically close the connection when the process ends
-process.on('SIGINT', async () => {
-    await mongoose.disconnect();
-    console.log('Disconnected from MongoDB');
-    process.exit(0);
-});
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/caudex';
+
+if (!MONGODB_URI) {
+  throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
+}
+
+// Define the shape of our global mongoose object
+interface GlobalMongoDB {
+  conn: typeof mongoose | null;
+  promise: Promise<typeof mongoose> | null;
+}
+
+// Declare the global type
+declare global {
+  var mongoose: GlobalMongoDB | undefined;
+}
+
+let cached = global.mongoose;
+
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
+
+async function dbConnect() {
+  if (cached.conn) {
+    return cached.conn;
+  }
+
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false,
+    };
+
+    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+      return mongoose;
+    });
+  }
+
+  try {
+    cached.conn = await cached.promise;
+  } catch (e) {
+    cached.promise = null;
+    throw e;
+  }
+
+  return cached.conn;
+}
+
+export default dbConnect;
+
+// The rest of your code (route.ts and models/Page.ts) remains the same as in the previous response
