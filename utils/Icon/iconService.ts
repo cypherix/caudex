@@ -1,7 +1,7 @@
 
 
 import { extensionsMap,fileNameMap } from "./mapping";
-const BASE_URL = "https://cdn.jsdelivr.net/gh/cypherix/icons@main/";
+const BASE_URL = "https://cloud-project-end-demo.s3.eu-north-1.amazonaws.com/icons/icons/";
 const DEFAULT = "/assets/logo.svg"
 export const getFileMapping = (filename:string):string => {
     if(fileNameMap[filename]){

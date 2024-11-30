@@ -70,7 +70,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, link })
                     <input
                         type="text"
                         readOnly
-                        value={link}
+                        value={"localhost:3000"+link}
                         className="flex-grow focus:outline-none"
                     />
                     <button

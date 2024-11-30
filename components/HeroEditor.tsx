@@ -56,9 +56,10 @@ export const HeroEditor: React.FC = () => {
     const handleEditorChange = (value: string | undefined) => {
         if (activeFile && value !== undefined) {
             const dmp = new DMP.diff_match_patch();
-            const patches = dmp.patch_make(activeFile.content, value);
-            const patchText = dmp.patch_toText(patches);
             
+            const patches = dmp.patch_make(activeFile.content, value);
+            const patchText = dmp.patch_toText(patches);   
+
             updateFileContent(activeFile.name, value, patchText);            
         }
     };

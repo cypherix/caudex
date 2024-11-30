@@ -11,6 +11,7 @@ interface FileState {
     slug: string;
     files: FileType[];
     activeFile: FileType | null;
+    activeFilePatch: string; // New field to store accumulated patches
     isOpen: boolean;
     isShareOpen: boolean;
     isSyncing: boolean;
@@ -29,12 +30,14 @@ interface FileState {
     closeShareModal: () => void;
     setFiles: (files: FileType[]) => void;
     updateFileContent: (fileName: string, content: string, patch: string) => Promise<void>;
+    updateTOC: () => Promise<void>;
 }
 
 const useFileStore = create<FileState>((set, get) => ({
     slug: '',
     files: [],
     activeFile: null,
+    activeFilePatch: '', // Initialize activeFilePatch
     isOpen: false,
     isShareOpen: false,
     isSyncing: false,
@@ -43,6 +46,7 @@ const useFileStore = create<FileState>((set, get) => ({
     setActiveFile: (fileName: string) => set(
         produce((state: FileState) => {
             state.isMenuOpen = false;
+            state.activeFilePatch = ''; // Reset patch when changing files
             const file = state.files.find(f => f.name === fileName);
             if (file) {
                 state.activeFile = file;
@@ -53,6 +57,7 @@ const useFileStore = create<FileState>((set, get) => ({
         produce((state: FileState) => {
             if (state.activeFile?.name === fileName) {
                 state.activeFile = null;
+                state.activeFilePatch = ''; // Reset patch
             }
         })
     ),
@@ -66,6 +71,7 @@ const useFileStore = create<FileState>((set, get) => ({
                         state.files = [...state.files, { ...file }];
                     }
                     state.activeFile = state.files.find(f => f.name === file.name) || null;
+                    state.activeFilePatch = ''; // Reset patch
                 })
             );
         } catch (error) {
@@ -83,6 +89,7 @@ const useFileStore = create<FileState>((set, get) => ({
                 produce((state: FileState) => {
                     state.files = state.files.filter(f => f.name !== state.activeFile?.name);
                     state.activeFile = null;
+                    state.activeFilePatch = ''; // Reset patch
                 })
             );
         } catch (error) {
@@ -104,26 +111,40 @@ const useFileStore = create<FileState>((set, get) => ({
         set({ isMenuOpen: false });
     },
     updateFileContent: async (fileName: string, content: string, patch: string) => {
+        set(
+            produce((state: FileState) => {
+                const file = state.files.find(f => f.name === fileName);
+                if (file) {
+                    // Accumulate patches instead of immediately applying
+                    state.activeFilePatch += patch;
+                    
+                    // Update local file content
+                    file.content = content;
+                    if (state.activeFile?.name === fileName) {
+                        state.activeFile = file;
+                    }
+                }
+            })
+        );
+    },
+    updateTOC: async () => {
         set({ isSyncing: true });
         try {
-            await updateData(get().slug, fileName, patch);
-            set(
-                produce((state: FileState) => {
-                    const file = state.files.find(f => f.name === fileName);
-                    if (file) {
-                        file.content = content;
-                        if (state.activeFile?.name === fileName) {
-                            state.activeFile = file;
-                        }
-                    }
-                })
-            );
+            const { slug, activeFile, activeFilePatch } = get();
+            
+            if (activeFile && activeFilePatch) {
+                // Send the patch to the server
+                await updateData(slug, activeFile.name, activeFilePatch);
+                
+                // Clear the accumulated patch
+                set({ activeFilePatch: '' });
+            }
         } catch (error) {
-            console.error('Error updating file content:', error);
+            console.error('Error updating TOC:', error);
         } finally {
             set({ isSyncing: false });
         }
-    },
+    }
 }));
 
 export { useFileStore };

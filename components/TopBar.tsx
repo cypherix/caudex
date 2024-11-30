@@ -13,14 +13,16 @@ export const TopBar: React.FC = (): JSX.Element => {
         removeFile,
         deleteFile,
         openShareModal,
-        isSyncing
+        isSyncing,
+        updateTOC
     ] = useFileStore((state) => [
         state.activeFile,
         state.setActiveFile,
         state.removeFile,
         state.deleteFile,
         state.openShareModal,
-        state.isSyncing
+        state.isSyncing,
+        state.updateTOC
     ])
     const CopyToClipboard = async () => {
         if (activeFile) {
@@ -161,6 +163,21 @@ export const TopBar: React.FC = (): JSX.Element => {
                                 className="mr-[0.23rem]"
                             />
                             Copy
+                    </Button> : null
+                }{
+                    // Save Button
+                    activeFile ? 
+                    <Button
+                        onClick={updateTOC}
+                        className="text-sm flex items-center p-[0.25rem] rounded-md border-[#6272A4] border-[1px]">
+                            <Image
+                                src="/assets/save.svg"
+                                alt="Icon for the save"
+                                width={15}
+                                height={15}
+                                className="mr-[0.23rem]"
+                            />
+                            Save
                     </Button> : null
                 }
                 <Button className="mr-[0.5rem] text-sm flex items-center p-[0.25rem] rounded-md border-[#6272A4] border-[1px]"
